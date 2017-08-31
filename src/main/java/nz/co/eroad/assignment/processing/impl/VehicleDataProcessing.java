@@ -8,7 +8,6 @@ import nz.co.eroad.assignment.processing.ItemReader;
 import nz.co.eroad.assignment.processing.ItemWriter;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -25,8 +24,8 @@ import java.io.InputStreamReader;
  */
 public class VehicleDataProcessing extends ItemProcessing<VehicleData, VehicleData> {
 
-    public static final String API_URL = "https://maps.googleapis.com/maps/api/timezone/json?location=38.908133," +
-                                         "-77.047119&timestamp=1458000000&key=AIzaSyCjTQFK278Ar1rlmO_QTtrpvQnn7CGMq_E";
+    public static final String API_URL = "https://maps.googleapis.com/maps/api/timezone/json?location=%s," +
+                                         "%s&timestamp=%s&key=AIzaSyCjTQFK278Ar1rlmO_QTtrpvQnn7CGMq_E";
 
     public VehicleDataProcessing(ItemReader<VehicleData> reader, ItemWriter<VehicleData> writer) {
         super(reader, writer);
@@ -35,7 +34,8 @@ public class VehicleDataProcessing extends ItemProcessing<VehicleData, VehicleDa
     @Override
     protected VehicleData process(VehicleData item) {
         HttpClient client = HttpClientBuilder.create().build();
-        HttpGet httpGet = new HttpGet(API_URL);
+        HttpGet httpGet = new HttpGet(String.format(API_URL, item.getLatitude(), item.getLongitude(),
+                (item.getDateTime().getMillis() / 1000)));
 
         try {
             HttpResponse response = client.execute(httpGet);
